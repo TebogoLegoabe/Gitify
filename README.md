@@ -24,7 +24,7 @@ The goal of this project is to create an easy-to-use API that simplifies the pro
 - [Usage](#usage)
 - [Examples of Use](#examples-of-use)
 - [Issues](#issues)
-- [ATHORS](#AUTHORS)
+- [ATHORS](#Authors)
 
 ## Environment
 
