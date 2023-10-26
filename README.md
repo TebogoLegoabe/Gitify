@@ -44,4 +44,5 @@ If you encounter any issues or bugs while using the GitHub Stats API, please rep
 
 ## AUTHORS
 
-Tebogo Legoabe - [Github](https://github.com/TebogoLegoabe) / [LinkedIn](https://www.linkedin.com/in/tebogo-legoabe)  
+Tebogo Legoabe - [Github](https://github.com/TebogoLegoabe) / [LinkedIn](https://www.linkedin.com/in/tebogo-legoabe)
+Shakir Muhammedsaid - [Github](https://github.com/Shakir-ahmed1) / [LinkedIn](https://www.linkedin.com/in/shakir-ahmedsalih10)

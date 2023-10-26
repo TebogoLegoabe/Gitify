@@ -1,0 +1,47 @@
+h1, label, body, div {
+    font-family: Arial, Helvetica, sans-serif;
+}
+body, input, footer {
+    background-color: #333;
+    color: #ddd;
+}
+input[type=text] {
+    background-image: url('../images/search_icon.png');
+    background-size: 40px;
+    background-repeat: no-repeat;
+    padding-left: 40px;
+    height: 42px;
+    width: 60%;
+    border: 2px #888 solid;
+    border-radius: 5px;
+    font-size: 24px;
+  }
+label h1 {
+    margin: 40px;
+    font-size: 100px;
+  }
+
+.container {
+    display: flex;
+    align-items: center; /* vertical alignment */
+    justify-content: center; /* horizontal alignment */
+    vertical-align: middle;
+    flex-direction: column;
+    padding: 30px;
+}
+
+footer {
+    position: fixed;
+    height: 60px;
+    width: 100%;
+    bottom: 0;
+    border-top: 1px solid #CCCCCC;
+}
+footer p {
+    position: absolute;
+    text-align: center;
+    top: 10%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
