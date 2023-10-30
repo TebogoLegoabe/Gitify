@@ -1,55 +1,46 @@
-from flask import Flask, request, jsonify
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+#from app import db
+from models.user import User
 
 app = Flask(__name__)
 
-# Sample user data with programming languages used in repositories
-users = {
-    "user1": {
-        "username": "user1",
-        "followers": 100,
-        "public_repos": 20,
-        "languages": [
-            {"name": "Python", "usage": 70},
-            {"name": "JavaScript", "usage": 30}
-            ]
-    },
-    "user2": {
-        "username": "user2",
-        "followers": 50,
-        "public_repos": 10,
-        "languages": [
-            {"name": "C++", "usage": 60},
-            {"name": "Java", "usage": 40}
-            ]
-    }
-}
+# Configure the database URI (for SQLite, this is a file)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///github_users.db'
+
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    followers = db.Column(db.Integer)
+    public_repos = db.Column(db.Integer)
+
+# Sample user data with programming languages used in repositories (if needed)
+# ...
 
 # Endpoints
 @app.route('/user/<username>/followers', methods=['GET'])
 def get_followers(username):
-    if username in users:
-        user_info = users[username]
-        return f"Followers: {user_info['followers']}"
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return f"Followers: {user.followers}"
     else:
         return "User not found", 404
 
 @app.route('/user/<username>/repos', methods=['GET'])
 def get_repos(username):
-    if username in users:
-        user_info = users[username]
-        return f"Public Repositories: {user_info['public_repos']}"
+    user = User.query.filter_by(username=username).first()
+    if user:
+        return f"Public Repositories: {user.public_repos}"
     else:
         return "User not found", 404
 
 @app.route('/user/<username>/languages', methods=['GET'])
 def get_languages(username):
-    if username in users:
-        user_info = users[username]
-        languages = user_info.get('languages', [])
-        language_data = "\n".join([f"{lang['name']} ({lang['usage']}%)" for lang in languages])
-        return f"Languages:\n{language_data}"
-    else:
-        return "User not found", 404
+    # You can add language retrieval code here
+    # This depends on how you store languages in your database
+    return "Languages: Not implemented yet"
 
 if __name__ == '__main__':
     app.run(debug=True)
