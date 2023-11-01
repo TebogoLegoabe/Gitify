@@ -1,0 +1,17 @@
+footer {
+    background-color: #888;
+
+    bottom: 0px;
+    justify-self: end;
+    height: 60px;
+    width: 100%;
+    bottom: 0;
+    border-top: 1px solid #000;
+}
+footer p {
+    text-align: center;
+    top: 10%;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}

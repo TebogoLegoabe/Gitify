@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  {% for user in users %}
+  <div class="user">
+    <div class="user-info">
+      <img src="../static/images/avatar.jpg" alt="user's avatar">
+      <a href="#" class="user-name">{{ user.username }}</a>
+    </div>
+    <p class="user-description">followers: {{ user.followers }} public repos: {{ user.public_repos }}</p>
+    <div class="user-languages">
+      <ul>
+        {% for lang in user.languages %}
+        <li><span class="pre_circle">&nbsp;</span>{{ lang[0] }} {{ lang[1] }}%</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="user-others">other details</div>
+  </div>
+  {% endfor %}
+
+
+        
+</div>
+{% endblock content %}

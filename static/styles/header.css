@@ -1,0 +1,44 @@
+body{
+    background-color: #FFFFFF;
+    color: #000;
+}
+header {
+    background-color: #777;
+    display: flex;
+    text-align: center;
+    height: 58px;
+    width: 100%;
+    border-bottom: 1px solid #000;
+}
+header .logo {
+    left: 20px;
+    height: 100%;
+    padding-right: 10px;
+    margin-bottom: 10px;
+}
+
+.search_bar input[type=text] {
+    background-image: url('../images/search_icon.png');
+    background-size: 34px;
+    background-repeat: no-repeat;
+    background-color: #777;
+
+    color: #000000;
+    height: 30px;
+    width: 100%;
+    border: 2px #888 solid;
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 5px;
+    padding-left: 45px;
+  }
+
+.search_bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    flex-direction: column;
+    padding-left: 100px;
+    width: 50%;
+}
