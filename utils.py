@@ -15,20 +15,26 @@ def get_languages_lite(api_url):
     USAGE: get_languages_lite("https://api.github.com/users/{user_name}/repos") # repositories url
 
     """
+    # gets all repositories of the user
     response = requests.get(api_url, headers=headers)
     if response.status_code == 200:
         repos = response.json()
         language_counts = {}
         language_percentages = {}
+        # loops over the list of repositories and gets the main language used in that repo
         for repo in repos:
             language = repo["language"]
             if language is not None:
                 language_counts[language] = language_counts.get(language, 0) + 1
         total_repos = len(repos)
 
+        # language_count = {'JavaScript': 23, 'HTML': 1, 'Dart': 1, 'ActionScript': 1, 'CoffeeScript': 1, 'TypeScript': 1, 'PHP': 1}
+        # loops over the list of counted languages and calculates their percentage relative to the other languages
         for language, count in language_counts.items():
             percentage = round(count / total_repos * 100, 2)
             language_percentages[language] = percentage
+        # returns the language as dictionary
+        # language_percentages = {'JavaScript': 76.67, 'HTML': 3.33, 'Dart': 3.33, 'ActionScript': 3.33, 'CoffeeScript': 3.33, 'TypeScript': 3.33, 'PHP': 3.33}
         return language_percentages
 
 

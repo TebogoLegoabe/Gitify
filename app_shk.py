@@ -19,11 +19,15 @@ def home():
 @app.route('/users/<key_word>', methods=['GET'])
 def search_users(key_word):
     """ searchs in users, repositories """
+    # search for the key_word in the users -> e.g : https://api.github.com/search/users?q=re
     req = requests.get(f"https://api.github.com/search/users?q={key_word}", headers=headers)
     all_users = req.json()
     users = []
+    print("====", all_users)
+    # the result will have 'items' key set to the list of users that match the key word
     print(len(all_users['items']))
 
+    # looping through all of the results to access each user
     for user in all_users['items']:
         temp =  {
             "username": user['login'],
@@ -33,17 +37,25 @@ def search_users(key_word):
         }
         # DEBUGGING
         print("fetching for: ", user['login'])
+        # inside a user result you will find 'url' that contains detailed information about the user, and store the info in users_info variable. e.g: https://api.github.com/repos/creytiv/re
         user_info = requests.get(user['url'], headers=headers).json()
         
+        # inside the user_info the 'followers' key holds the number of followers the user has
         temp['followers'] = user_info['followers']
+        # inside the user_info the 'public_repos' key holds the number of public repositories the user owns
         temp['public_repos'] = user_info['public_repos']
+        # inside the 'repos_url the 'repos_url' key holds a link to all the repositories the user owns. e.g : https://api.github.com/users/Qihoo360
+        # what the get_language function does is: it accepts a repos_url, adds all the language usages of that user in each repository, calculates their usage percentage,returns a dictionary of languages, when you use the .itmes() the result will be as follows. eg: [('Java', 21.43), ('Kotlin', 21.43), ('Python', 14.29), ('Others', 42.85)]
         unfiltered_lang = get_language(user_info['repos_url']).items()
+
+        # the code bellow is a filtering mechanism: it selects top 3 languages used, sum the other languages and adds them as a forth language
         sorted_lang = sorted(unfiltered_lang,key=lambda ln: ln[1], reverse=True)
         temp['languages'] = sorted_lang[0:3]
         remained = 0
         for t in temp['languages']:
             remained += t[1]
         temp['languages'].append(('Others', 100 - remained))
+        # adds the user's info to the list of users
         users.append(temp)
     
     # DEBUGGING: for visualising
