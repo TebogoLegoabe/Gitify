@@ -28,13 +28,21 @@ The goal of this project is to create an easy-to-use API that simplifies the pro
 
 ## Environment
 
-The GitHub Stats API is developed using [programming language] and [framework]. It interacts with the GitHub API and requires the use of OAuth tokens for authentication.
+The Gitify is developed using python and flask. It interacts with the GitHub API and requires the use of OAuth tokens for authentication.
+dependencies - python, flask, requests
 
 ## Usage
 
-Learn how to use the GitHub Stats API in the [Usage](#usage) section. It provides details on making API requests and accessing the data you need.
+clone the repo.
+add github access token. for ubuntu `export ACCESS_TOKEN="place_your_token_here"`
+run `python app.py` # it will open the app with the debuggin on
+navigate to home page http://127.0.0.1:5000
 
 ## Examples of Use
+to look for trending repositories - `http://127.0.0.1:5000/trending`
+to search for users by user name - `http://127.0.0.1:5000/users`- type key words in the search bar to get results
+to search for repositories - `http://127.0.0.1:5000/repos`type key words in the search bar to get results
+
 
 See practical examples of how to use the GitHub Stats API in the [Examples of Use](#examples-of-use) section. These examples help you understand how to leverage the API's capabilities.
 
