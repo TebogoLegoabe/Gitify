@@ -13,9 +13,20 @@
   </head>
   <body>
     <header>
-      <span class="logo"><img src="../static/images/gitify_logo.png" alt="gitify logo"></span>
-	  <div class="search_bar"s>
-        <input type="text" id="query">
+      <span class="logo"><img src="../static/images/gitify_logo_light.png" alt="gitify logo"></span>
+	  <div class="search_bar">
+      {% if users is not none %}
+        <form action="{{url_for('search_users')}}" method="get">
+          <input type="text" id="query" name="q" placeholder="Enter your search query here" class="search_keyword">
+          <input type="submit" value="Search" class="search_submit">
+        </form>
+      {% elif repos is not none %}
+        <form action="{{url_for('search_repos')}}" method="get">
+          <input type="text" id="query" name="q" placeholder="Enter your search query here" class="search_keyword">
+          <input type="submit" value="Search" class="search_submit">
+        </form>
+      {% endif %}
+      
     </div>
     </header>
     {% block content %}

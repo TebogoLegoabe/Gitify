@@ -1,5 +1,7 @@
 h1, label, body, div {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #00072d;
+    color: #dddddd;
 }
 .container {
     display: flex;
@@ -17,15 +19,20 @@ h1, label, body, div {
     margin-bottom: 5px;
 }
 .container .repo img{
-    height: 20px;
-    width: 20px;
-    background-size: 20px;
-    border-radius: 10px;
+    height: 30px;
+    width: 30px;
+    background-size: 15px;
+    border-radius: 15px;
+    border: white 1px solid;
 }
 .container .repo-name {
+    /* padding-left: 10px;
+    color: #FFFFFF;
+    font-size: 16px; */
+    position: relative;
     padding-left: 10px;
-    /* color: #FFFFFF; */
-    font-size: 16px;
+    font-size: 24px;
+    bottom: 5px;
 }
 .repo-description {
     font-size: 14px;
@@ -42,7 +49,7 @@ h1, label, body, div {
 }
 /* .repo-topics li .pre_circle {
     display: inline-block;
-    /* margin: 3px; */
+    margin: 3px;
     margin: 0px 10px;
     height: 10px;
     width: 10px;
@@ -54,7 +61,6 @@ h1, label, body, div {
     display: inline;
     /* color: #FFFFFF; */
     list-style: square;
-    box-sizing: ;
 
 }
 .repo-description {

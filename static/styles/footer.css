@@ -1,8 +1,8 @@
-footer {
+/* footer {
+    display: flexbox;
     background-color: #888;
-
     bottom: 0px;
-    justify-self: end;
+    align-self: end;
     height: 60px;
     width: 100%;
     bottom: 0;
@@ -14,4 +14,18 @@ footer p {
     bottom: 0;
     right: 0;
     left: 0;
+} */
+footer{
+    height: 60px; width: 100%;
+    border-top: 1px solid #777777;
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center
+}
+
+footer p {
+  color: #787878;
+  text-align: center;
 }

@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
+  {% if repos|length != 0 %}
   {% for repo in repos %}
   <div class="repo">
     <div class="repo-info">
-      <img src="../static/images/avatar.jpg" alt="repos picture?">
-      <a href="{{ repo.html_url }}" class="repo-name">{{ repo.name }}</a>
-      <span>{{ repo.owner}}</span>
+      <img src="{{ repo.avatar }}" alt="repos picture?">
+      <a href="{{ repo.html_url }}" class="repo-name">{{ repo.name }}/<small>{{ repo.owner}}</small></a>
     </div>
-    <p class="repo-description">{{repo.description}}</p>
+    <p class="repo-description"><b>{{repo.description|default(' ', true)}}</b></p>
     <div class="repo-topics">
       <ul>
         {% for topic in repo.topics %}
@@ -16,10 +16,12 @@
         {% endfor %}
       </ul>
     </div>
-    <div class="repo-others">Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
+    <div class="repo-others">Language: {{repo.language}} | Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
   </div>
   {% endfor %}
-
+  {% else %}
+    <div class="no_result">No results found for "<small>{{ request.args.get('q') }}</small>"</div>
+  {% endif%}
 
         
 </div>

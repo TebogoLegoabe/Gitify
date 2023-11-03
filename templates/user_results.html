@@ -1,24 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-  {% for user in users %}
-  <div class="user">
-    <div class="user-info">
-      <img src="../static/images/avatar.jpg" alt="user's avatar">
-      <a href="#" class="user-name">{{ user.username }}</a>
-    </div>
-    <p class="user-description">followers: {{ user.followers }} public repos: {{ user.public_repos }}</p>
-    <div class="user-languages">
-      <ul>
-        {% for lang in user.languages %}
-        <li><span class="pre_circle">&nbsp;</span>{{ lang[0] }} {{ lang[1] }}%</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="user-others">other details</div>
-  </div>
-  {% endfor %}
+  {% if users|length != 0 %}
+    {% for user in users %}
+    <div class="user">
+      <div class="user-info">
+        <img src="{{ user.avatar }}" alt="user's avatar">
+        <a href="{{ user.html_url }}" target="_blank" rel="noopener noreferrer" class="user-name">{{ user.username }}</a>
+      </div>
+      <div class="user-bio"><b>{{ user.bio|default(' ', true)}}</b></div>
+      <p class="user-stats">Location: {{ user.location|default('Unknown', true) }} | Public repos: {{ user.public_repos }} | Followers: {{ user.followers }} | Following: {{ user.following}}</p>
+      <div class="user-languages">
+        <ul>
+          {% if user.languages|length != 1%}
+            {% for lang in user.languages %}
+              <li><span class="pre_circle" style="background-color: {{ colors.get(lang[0], 'green') }};">&nbsp;</span>{{ lang[0] }} {{ lang[1]|round (2) }}%</li>
+            {% endfor %}
+          {% else %}
+            <li><span class="pre_circle" style="background-color: #eeeeee;">&nbsp;</span>No programming language found</li>
+          {% endif %}
 
+    
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="no_result">No results found for "<small>{{ request.args.get('q') }}</small>"</div>
+  {% endif%}
 
         
 </div>

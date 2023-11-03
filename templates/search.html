@@ -8,8 +8,15 @@
   </head>
   <body>
     <div class="container"s>
-        <label for="query"><h1>Gitify</h1></label>
-        <input type="text" id="query">
+      {% if users is not none and users %}
+        <form action="{{url_for('search_users')}}" method="get">
+      {% elif repos is not none and repos %}
+        <form action="{{url_for('search_repos')}}" method="get">
+      {% endif %}
+          <label for="query"><h1>Gitify</h1></label>
+          <input type="search" id="query" name="q" placeholder="Enter your search query here">
+          <input type="submit" value="Search" class="search_submit">
+        </form>
     </div>
     <footer>
         <p>© 2023 Gitify</p>
