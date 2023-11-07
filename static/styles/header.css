@@ -8,49 +8,81 @@ body{
 header {
     background-color: #00072d;
     display: flex;
-    text-align: center;
-    height: 58px;
+    /* align-items: center; */
+    justify-content: space-between;
+    min-height: 58px;
     width: 100%;
     border-bottom: 1px solid #777777;
 }
+
 header .logo {
-    left: 20px;
+    /* position: absolute; */
+    width: auto;
     height: 100%;
     padding-right: 10px;
     margin-bottom: 10px;
 }
 
-.search_keyword {
-    background-image: url('../images/search_icon_light.png');
-    background-size: 34px;
-    background-repeat: no-repeat;
-    background-color: #00072d;
-
-    color: white;
-    caret-color: white;
-    height: 30px;
-    width: 100%;
-    border: 2px #888 solid;
-    border-radius: 5px;
-    font-size: 18px;
-    padding: 5px;
-    padding-left: 45px;
-  }
-
 .search_bar {
+    flex-grow: 1;
     display: flex;
-    align-items: center;
     justify-content: center;
-    vertical-align: middle;
-    flex-direction: column;
-    padding-left: 50px;
-    padding-right: 100px;
-
-    width: 50%;
 }
 .search_bar form {
-    width: 100%;
+    /* width: 100%; */
+    /* padding-left: 180px; */
+    background-color: inherit;
+    justify-self: self-left;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-self: center;
+    justify-self: center;
+    width: 440px;
 }
+.inputs {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    border: 2px #888 solid;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    width: 80%;
+}
+
 .search_submit {
-    display: none;
+    background-color: transparent;
+    border: none;
 }
+.search_submit img {
+    size: 40px;
+    height: 40px;;
+}
+.query
+{
+    height: 42px;
+    width: 100%;
+
+    font-size: 24px;
+    color: white;
+    caret-color: white;
+    border: none;
+    background-color: transparent;
+    margin-right: 15px;
+}
+.nav a{
+    display: inline-block;
+    color: yellow;
+    max-height: 58px;
+    padding: auto;
+    text-decoration: none;
+    margin: 20px 0px;
+    /* padding: 20px 0px; */
+    border-left: lightyellow solid 1px;
+    padding: 0px 20px;
+}
+.nav a.first-nav {
+    border: none;
+}
+
+

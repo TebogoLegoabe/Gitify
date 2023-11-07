@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-  {% if users|length != 0 %}
+  {% if results > 0 %}     
+  <div class="stats">
+    <span><b>{{ results }}</b> Users found</span>
+  </div>
     {% for user in users %}
     <div class="user">
       <div class="user-info">
@@ -25,9 +28,11 @@
       </div>
     </div>
     {% endfor %}
-  {% else %}
+    {% elif results == 0 %}
     <div class="no_result">No results found for "<small>{{ request.args.get('q') }}</small>"</div>
-  {% endif%}
+  {% else %}
+  <div class="no_result">Search for Users</div>
+  {% endif %}
 
         
 </div>

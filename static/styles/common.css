@@ -14,3 +14,9 @@ body .container {
     text-align: center;
     font-size: 50px;
 }
+.stats {
+    margin-bottom: 10px;
+}
+.stats span {
+    font-size: 20px;
+}

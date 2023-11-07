@@ -1,27 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
-  {% if repos|length != 0 %}
-  {% for repo in repos %}
-  <div class="repo">
-    <div class="repo-info">
-      <img src="{{ repo.avatar }}" alt="repos picture?">
-      <a href="{{ repo.html_url }}" class="repo-name">{{ repo.name }}/<small>{{ repo.owner}}</small></a>
+  {% if results > 0 %}
+    <div class="stats">
+      <span><b>{{ results }}</b> Repositories found</span>
     </div>
-    <p class="repo-description"><b>{{repo.description|default(' ', true)}}</b></p>
-    <div class="repo-topics">
-      <ul>
-        {% for topic in repo.topics %}
-        <li>{{ topic }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="repo-others">Language: {{repo.language}} | Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
-  </div>
-  {% endfor %}
-  {% else %}
+    {% for repo in repos %}
+      <div class="repo">
+        <div class="repo-info">
+          <img src="{{ repo.avatar }}" alt="repos picture?">
+          <a href="{{ repo.html_url }}" class="repo-name">{{ repo.name }}/<small>{{ repo.owner}}</small></a>
+        </div>
+        <p class="repo-description"><b>{{repo.description|default(' ', true)}}</b></p>
+        <div class="repo-topics">
+          <ul class="topics">
+            {% for topic in repo.topics %}
+            <li class="topic">{{ topic }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="repo-others">Language: {{repo.language}} | Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
+      </div>
+    {% endfor %}
+  {% elif results == 0 %}
     <div class="no_result">No results found for "<small>{{ request.args.get('q') }}</small>"</div>
-  {% endif%}
+  {% else %}
+  <div class="no_result">Search for Repositories</div>
+  {% endif %}
 
         
 </div>
