@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../static/styles/common.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles/header.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles/footer.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles/filters.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles/user.css">
+    <link rel="stylesheet" type="text/css" href="../static/styles/repo.css">
+    <link rel="icon" href="../static/images/icon.png" />
+    <title>Gitify - 404 error page</title>
+
+  </head>
+  <body>
+    <header>
+      <span class="logo"><img src="../static/images/gitify_logo_light.png" alt="gitify logo"></span>
+    </div>
+    <div>
+        <h1>🔥 Trending Repositories 🔥</h1>
+    </div>
+      <div class="nav">
+        <a href="{{url_for('trending_repos')}}" class="first-nav">🔥 Trending</a>
+        <a href="{{url_for('home')}}">🔎 Search</a>
+      </div>
+    </header>
+        <div class="container">
+            {% for repo in repos %}
+            <div class="repo">
+              <div class="repo-info">
+                <img src="{{ repo.avatar }}" alt="repos picture?">
+                <a href="{{ repo.html_url }}" target="_blank" rel="noopener noreferrer" class="repo-name">{{ repo.name }}/<small>{{ repo.owner}}</small></a>
+              </div>
+              <p class="repo-description"><b>{{repo.description|default(' ', true)}}</b></p>
+              <div class="repo-topics">
+                <ul class="topics">
+                  {% for topic in repo.topics %}
+                  <li class="topic">{{ topic }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="repo-others">Language: {{repo.language}} | Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
+            </div>
+            {% endfor %}
+        
+        
+                
+        </div>
+  </div>
+    <footer>
+        <p>© 2023 Gitify</p>
+    </footer>
+  </body>
+</html>

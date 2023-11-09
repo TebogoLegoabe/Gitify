@@ -17,7 +17,7 @@
         <ul>
           {% if user.languages|length != 1%}
             {% for lang in user.languages %}
-              <li><span class="pre_circle" style="background-color: {{ colors.get(lang[0], 'green') }};">&nbsp;</span>{{ lang[0] }} {{ lang[1]|round (2) }}%</li>
+              <li><span class="pre_circle" style="background-color: {{ options.colors.get(lang[0], 'green') }};">&nbsp;</span>{{ lang[0] }} {{ lang[1]|round (2) }}%</li>
             {% endfor %}
           {% else %}
             <li><span class="pre_circle" style="background-color: #eeeeee;">&nbsp;</span>No programming language found</li>
@@ -28,6 +28,21 @@
       </div>
     </div>
     {% endfor %}
+    <ul class="page_nav">
+      {% if p.page != 1 %}
+      <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=1)}}">first</a></li>
+      <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=p.page-1)}}">prev</a></li>
+      {% endif %}
+      <li><a href="" class="current_page">{{ p.page}}</a></li>
+      {% if p.page < 1000 / p.per_page and p.page < results/p.per_page %}
+      <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=p.page+1)}}">next</a></li>
+        {% if results/p.per_page > 1000 / p.per_page %}
+          <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=1000 // p.per_page)}}">last</a></li>
+        {% else %}
+          <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=results//p.per_page)}}">last</a></li>
+        {% endif %}
+      {% endif %}
+    </ul>
     {% elif results == 0 %}
     <div class="no_result">No results found for "<small>{{ request.args.get('q') }}</small>"</div>
   {% else %}

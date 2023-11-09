@@ -1,10 +1,29 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, abort
 from utils import get_languages_lite as get_language
 import requests
 from os import getenv
 import datetime
 
-colors = {
+REPOS_PER_PAGE = 5
+USERS_PER_PAGE = 4
+
+access_token = getenv("ACCESS_TOKEN")
+
+headers = {
+    'Authorization': f'token {access_token}',
+    'Accept': 'application/vnd.github.v3+json',
+}
+options = {
+    "sort_by" : [
+             ("_desc", "Best match"),
+             ("stars_desc","Most stars"),
+             ("stars_asc","Fewest stars"),
+             ("forks_desc","Most Forks"),
+             ("forks_asc"," Fewest Forks"),
+             ("updated_desc", "Recently updated"),
+             ("updated_asc", "Least recently updated"),
+    ],
+    "colors" : {
         "Python": "#3776AB", # Blue
         "Java": "#B07219", # Brown
         "JavaScript": "#F7DF1E", # Yellow
@@ -18,16 +37,19 @@ colors = {
         "Kotlin": "#F18E33", # Amber
         "Makefile": "#427B58", # Olive green
         "Others": "#666666" # gray 
+    },
+    "popular_lang" : [ ("C","C"),("C#","C#"), ("C++","C++"), ("CoffeeScript","CoffeeScript"),("CSS","CSS"), ("Dart","Dart"),("DM","DM"), ("Elixir","Elixir"), ("Go","Go"),("Groovy","Groovy"), ("HTML","HTML"), ("Java","Java"), ("JavaScript","JavaScript"), ("Kotlin","Kotlin"), ("Objective-C","Objective-C"), ("Perl","Perl"), ("PHP","PHP"), ("PowerShell","PowerShell"), ("Python","Python"), ("Ruby","Ruby"), ("Rust","Rust"), ("Scala","Scala"), ("Shell","Shell"), ("Swift","Swift"), ("TypeScript","TypeScript")],
+    "everything_lang" : [("1C Enterprise","1C Enterprise"), ("2-Dimensional Array","2-Dimensional Array"), ("4D","4D"), ("ABAP","ABAP"), ("ABAP CDS","ABAP CDS"), ("ABNF","ABNF"), ("ActionScript","ActionScript"), ("Ada","Ada"), ("Adblock Filter List","Adblock Filter List"), ("Adobe Font Metrics","Adobe Font Metrics"), ("Agda","Agda"), ("AGS Script","AGS Script"), ("AIDL","AIDL"), ("AL","AL"), ("Alloy","Alloy"), ("Alpine Abuild","Alpine Abuild"), ("Altium Designer","Altium Designer"), ("AMPL","AMPL"), ("AngelScript","AngelScript"), ("Ant Build System","Ant Build System"), ("Antlers","Antlers"), ("ANTLR","ANTLR"), ("ApacheConf","ApacheConf"), ("Apex","Apex"), ("API Blueprint","API Blueprint"), ("APL","APL"), ("Apollo Guidance Computer","Apollo Guidance Computer"), ("AppleScript","AppleScript"), ("Arc","Arc"), ("AsciiDoc","AsciiDoc"), ("ASL","ASL"), ("ASN.1","ASN.1"), ("ASP.NET","ASP.NET"), ("AspectJ","AspectJ"), ("Assembly","Assembly"), ("Astro","Astro"), ("Asymptote","Asymptote"), ("ATS","ATS"), ("Augeas","Augeas"), ("AutoHotkey","AutoHotkey"), ("AutoIt","AutoIt"), ("Avro IDL","Avro IDL"), ("Awk","Awk"), ("Ballerina","Ballerina"), ("BASIC","BASIC"), ("Batchfile","Batchfile"), ("Beef","Beef"), ("Befunge","Befunge"), ("Berry","Berry"), ("BibTeX","BibTeX"), ("Bicep","Bicep"), ("Bikeshed","Bikeshed"), ("Bison","Bison"), ("BitBake","BitBake"), ("Blade","Blade"), ("BlitzBasic","BlitzBasic"), ("BlitzMax","BlitzMax"), ("Bluespec","Bluespec"), ("Bluespec BH","Bluespec BH"), ("Boo","Boo"), ("Boogie","Boogie"), ("Brainfuck","Brainfuck"), ("BrighterScript","BrighterScript"), ("Brightscript","Brightscript"), ("Browserslist","Browserslist"), ("C-ObjDump","C-ObjDump"), ("C2hs Haskell","C2hs Haskell"), ("Cabal Config","Cabal Config"), ("Cadence","Cadence"), ("Cairo","Cairo"), ("CameLIGO","CameLIGO"), ("CAP CDS","CAP CDS"), ("Cap'n Proto","Cap'n Proto"), ("CartoCSS","CartoCSS"), ("Ceylon","Ceylon"), ("Chapel","Chapel"), ("Charity","Charity"), ("Checksums","Checksums"), ("ChucK","ChucK"), ("CIL","CIL"), ("Circom","Circom"), ("Cirru","Cirru"), ("Clarion","Clarion"), ("Clarity","Clarity"), ("Classic ASP","Classic ASP"), ("Clean","Clean"), ("Click","Click"), ("CLIPS","CLIPS"), ("Clojure","Clojure"), ("Closure Templates","Closure Templates"), ("Cloud Firestore Security Rules","Cloud Firestore Security Rules"), ("CMake","CMake"), ("COBOL","COBOL"), ("CODEOWNERS","CODEOWNERS"), ("CodeQL","CodeQL"), ("ColdFusion","ColdFusion"), ("ColdFusion CFC","ColdFusion CFC"), ("COLLADA","COLLADA"), ("Common Lisp","Common Lisp"), ("Common Workflow Language","Common Workflow Language"), ("Component Pascal","Component Pascal"), ("CoNLL-U","CoNLL-U"), ("Cool","Cool"), ("Coq","Coq"), ("Cpp-ObjDump","Cpp-ObjDump"), ("Creole","Creole"), ("Crystal","Crystal"), ("CSON","CSON"), ("Csound","Csound"), ("Csound Document","Csound Document"), ("Csound Score","Csound Score"), ("CSV","CSV"), ("Cuda","Cuda"), ("CUE","CUE"), ("Cue Sheet","Cue Sheet"), ("cURL Config","cURL Config"), ("Curry","Curry"), ("CWeb","CWeb"), ("Cycript","Cycript"), ("Cypher","Cypher"), ("Cython","Cython"), ("D","D"), ("D-ObjDump","D-ObjDump"), ("D2","D2"), ("Dafny","Dafny"), ("Darcs Patch","Darcs Patch"), ("DataWeave","DataWeave"), ("Debian Package Control File","Debian Package Control File"), ("DenizenScript","DenizenScript"), ("desktop","desktop"), ("Dhall","Dhall"), ("Diff","Diff"), ("DIGITAL Command Language","DIGITAL Command Language"), ("dircolors","dircolors"), ("DirectX 3D File","DirectX 3D File"), ("DNS Zone","DNS Zone"), ("Dockerfile","Dockerfile"), ("Dogescript","Dogescript"), ("Dotenv","Dotenv"), ("DTrace","DTrace"), ("Dylan","Dylan"), ("E","E"), ("E-mail","E-mail"), ("Eagle","Eagle"), ("Earthly","Earthly"), ("Easybuild","Easybuild"), ("EBNF","EBNF"), ("eC","eC"), ("Ecere Projects","Ecere Projects"), ("ECL","ECL"), ("ECLiPSe","ECLiPSe"), ("Ecmarkup","Ecmarkup"), ("EditorConfig","EditorConfig"), ("Edje Data Collection","Edje Data Collection"), ("edn","edn"), ("Eiffel","Eiffel"), ("EJS","EJS"), ("Elm","Elm"), ("Elvish","Elvish"), ("Elvish Transcript","Elvish Transcript"), ("Emacs Lisp","Emacs Lisp"), ("EmberScript","EmberScript"), ("EQ","EQ"), ("Erlang","Erlang"), ("Euphoria","Euphoria"), ("F#","F#"), ("F*","F*"), ("Factor","Factor"), ("Fancy","Fancy"), ("Fantom","Fantom"), ("Faust","Faust"), ("Fennel","Fennel"), ("FIGlet Font","FIGlet Font"), ("Filebench WML","Filebench WML"), ("Filterscript","Filterscript"), ("fish","fish"), ("Fluent","Fluent"), ("FLUX","FLUX"), ("Formatted","Formatted"), ("Forth","Forth"), ("Fortran","Fortran"), ("Fortran Free Form","Fortran Free Form"), ("FreeBasic","FreeBasic"), ("FreeMarker","FreeMarker"), ("Frege","Frege"), ("Futhark","Futhark"), ("G-code","G-code"), ("Game Maker Language","Game Maker Language"), ("GAML","GAML"), ("GAMS","GAMS"), ("GAP","GAP"), ("GCC Machine Description","GCC Machine Description"), ("GDB","GDB"), ("GDScript","GDScript"), ("GEDCOM","GEDCOM"), ("Gemfile.lock","Gemfile.lock"), ("Gemini","Gemini"), ("Genero","Genero"), ("Genero Forms","Genero Forms"), ("Genie","Genie"), ("Genshi","Genshi"), ("Gentoo Ebuild","Gentoo Ebuild"), ("Gentoo Eclass","Gentoo Eclass"), ("Gerber Image","Gerber Image"), ("Gettext Catalog","Gettext Catalog"), ("Gherkin","Gherkin"), ("Git Attributes","Git Attributes"), ("Git Config","Git Config"), ("Git Revision List","Git Revision List"), ("Gleam","Gleam"), ("GLSL","GLSL"), ("Glyph","Glyph"), ("Glyph Bitmap Distribution Format","Glyph Bitmap Distribution Format"), ("GN","GN"), ("Gnuplot","Gnuplot"), ("Go Checksums","Go Checksums"), ("Go Module","Go Module"), ("Go Workspace","Go Workspace"), ("Godot Resource","Godot Resource"), ("Golo","Golo"), ("Gosu","Gosu"), ("Grace","Grace"), ("Gradle","Gradle"), ("Gradle Kotlin DSL","Gradle Kotlin DSL"), ("Grammatical Framework","Grammatical Framework"), ("Graph Modeling Language","Graph Modeling Language"), ("GraphQL","GraphQL"), ("Graphviz (DOT)","Graphviz (DOT)"), ("Groovy Server Pages","Groovy Server Pages"), ("GSC","GSC"), ("Hack","Hack"), ("Haml","Haml"), ("Handlebars","Handlebars"), ("HAProxy","HAProxy"), ("Harbour","Harbour"), ("Haskell","Haskell"), ("Haxe","Haxe"), ("HCL","HCL"), ("HiveQL","HiveQL"), ("HLSL","HLSL"), ("HOCON","HOCON"), ("HolyC","HolyC"), ("hoon","hoon"), ("Hosts File","Hosts File"), ("HTML+ECR","HTML+ECR"), ("HTML+EEX","HTML+EEX"), ("HTML+ERB","HTML+ERB"), ("HTML+PHP","HTML+PHP"), ("HTML+Razor","HTML+Razor"), ("HTTP","HTTP"), ("HXML","HXML"), ("Hy","Hy"), ("HyPhy","HyPhy"), ("IDL","IDL"), ("Idris","Idris"), ("Ignore List","Ignore List"), ("IGOR Pro","IGOR Pro"), ("ImageJ Macro","ImageJ Macro"), ("Imba","Imba"), ("Inform 7","Inform 7"), ("INI","INI"), ("Ink","Ink"), ("Inno Setup","Inno Setup"), ("Io","Io"), ("Ioke","Ioke"), ("IRC log","IRC log"), ("Isabelle","Isabelle"), ("Isabelle ROOT","Isabelle ROOT"), ("J","J"), ("Janet","Janet"), ("JAR Manifest","JAR Manifest"), ("Jasmin","Jasmin"), ("Java Properties","Java Properties"), ("Java Server Pages","Java Server Pages"), ("JavaScript+ERB","JavaScript+ERB"), ("JCL","JCL"), ("Jest Snapshot","Jest Snapshot"), ("JetBrains MPS","JetBrains MPS"), ("JFlex","JFlex"), ("Jinja","Jinja"), ("Jison","Jison"), ("Jison Lex","Jison Lex"), ("Jolie","Jolie"), ("jq","jq"), ("JSON","JSON"), ("JSON with Comments","JSON with Comments"), ("JSON5","JSON5"), ("JSONiq","JSONiq"), ("JSONLD","JSONLD"), ("Jsonnet","Jsonnet"), ("Julia","Julia"), ("Jupyter Notebook","Jupyter Notebook"), ("Just","Just"), ("Kaitai Struct","Kaitai Struct"), ("KakouneScript","KakouneScript"), ("KerboScript","KerboScript"), ("KiCad Layout","KiCad Layout"), ("KiCad Legacy Layout","KiCad Legacy Layout"), ("KiCad Schematic","KiCad Schematic"), ("Kickstart","Kickstart"), ("Kit","Kit"), ("KRL","KRL"), ("Kusto","Kusto"), ("kvlang","kvlang"), ("LabVIEW","LabVIEW"), ("Lark","Lark"), ("Lasso","Lasso"), ("Latte","Latte"), ("Lean","Lean"), ("Less","Less"), ("Lex","Lex"), ("LFE","LFE"), ("LigoLANG","LigoLANG"), ("LilyPond","LilyPond"), ("Limbo","Limbo"), ("Linker Script","Linker Script"), ("Linux Kernel Module","Linux Kernel Module"), ("Liquid","Liquid"), ("Literate Agda","Literate Agda"), ("Literate CoffeeScript","Literate CoffeeScript"), ("Literate Haskell","Literate Haskell"), ("LiveScript","LiveScript"), ("LLVM","LLVM"), ("Logos","Logos"), ("Logtalk","Logtalk"), ("LOLCODE","LOLCODE"), ("LookML","LookML"), ("LoomScript","LoomScript"), ("LSL","LSL"), ("LTspice Symbol","LTspice Symbol"), ("Lua","Lua"), ("M","M"), ("M4","M4"), ("M4Sugar","M4Sugar"), ("Macaulay2","Macaulay2"), ("Makefile","Makefile"), ("Mako","Mako"), ("Markdown","Markdown"), ("Marko","Marko"), ("Mask","Mask"), ("Mathematica","Mathematica"), ("MATLAB","MATLAB"), ("Maven POM","Maven POM"), ("Max","Max"), ("MAXScript","MAXScript"), ("mcfunction","mcfunction"), ("MDX","MDX"), ("Mercury","Mercury"), ("Mermaid","Mermaid"), ("Meson","Meson"), ("Metal","Metal"), ("Microsoft Developer Studio Project","Microsoft Developer Studio Project"), ("Microsoft Visual Studio Solution","Microsoft Visual Studio Solution"), ("MiniD","MiniD"), ("MiniYAML","MiniYAML"), ("Mint","Mint"), ("Mirah","Mirah"), ("mIRC Script","mIRC Script"), ("MLIR","MLIR"), ("Modelica","Modelica"), ("Modula-2","Modula-2"), ("Modula-3","Modula-3"), ("Module Management System","Module Management System"), ("Monkey","Monkey"), ("Monkey C","Monkey C"), ("Moocode","Moocode"), ("MoonScript","MoonScript"), ("Motoko","Motoko"), ("Motorola 68K Assembly","Motorola 68K Assembly"), ("Move","Move"), ("MQL4","MQL4"), ("MQL5","MQL5"), ("MTML","MTML"), ("MUF","MUF"), ("mupad","mupad"), ("Muse","Muse"), ("Mustache","Mustache"), ("Myghty","Myghty"), ("nanorc","nanorc"), ("Nasal","Nasal"), ("NASL","NASL"), ("NCL","NCL"), ("Nearley","Nearley"), ("Nemerle","Nemerle"), ("NEON","NEON"), ("nesC","nesC"), ("NetLinx","NetLinx"), ("NetLinx+ERB","NetLinx+ERB"), ("NetLogo","NetLogo"), ("NewLisp","NewLisp"), ("Nextflow","Nextflow"), ("Nginx","Nginx"), ("Nim","Nim"), ("Ninja","Ninja"), ("Nit","Nit"), ("Nix","Nix"), ("NL","NL"), ("NPM Config","NPM Config"), ("NSIS","NSIS"), ("Nu","Nu"), ("NumPy","NumPy"), ("Nunjucks","Nunjucks"), ("Nushell","Nushell"), ("NWScript","NWScript"), ("OASv2-json","OASv2-json"), ("OASv2-yaml","OASv2-yaml"), ("OASv3-json","OASv3-json"), ("OASv3-yaml","OASv3-yaml"), ("ObjDump","ObjDump"), ("Object Data Instance Notation","Object Data Instance Notation"), ("Objective-C++","Objective-C++"), ("Objective-J","Objective-J"), ("ObjectScript","ObjectScript"), ("OCaml","OCaml"), ("Odin","Odin"), ("Omgrofl","Omgrofl"), ("ooc","ooc"), ("Opa","Opa"), ("Opal","Opal"), ("Open Policy Agent","Open Policy Agent"), ("OpenAPI Specification v2","OpenAPI Specification v2"), ("OpenAPI Specification v3","OpenAPI Specification v3"), ("OpenCL","OpenCL"), ("OpenEdge ABL","OpenEdge ABL"), ("OpenQASM","OpenQASM"), ("OpenRC runscript","OpenRC runscript"), ("OpenSCAD","OpenSCAD"), ("OpenStep Property List","OpenStep Property List"), ("OpenType Feature File","OpenType Feature File"), ("Option List","Option List"), ("Org","Org"), ("Ox","Ox"), ("Oxygene","Oxygene"), ("Oz","Oz"), ("P4","P4"), ("Pact","Pact"), ("Pan","Pan"), ("Papyrus","Papyrus"), ("Parrot","Parrot"), ("Parrot Assembly","Parrot Assembly"), ("Parrot Internal Representation","Parrot Internal Representation"), ("Pascal","Pascal"), ("Pawn","Pawn"), ("PDDL","PDDL"), ("PEG.js","PEG.js"), ("Pep8","Pep8"), ("Pic","Pic"), ("Pickle","Pickle"), ("PicoLisp","PicoLisp"), ("PigLatin","PigLatin"), ("Pike","Pike"), ("PlantUML","PlantUML"), ("PLpgSQL","PLpgSQL"), ("PLSQL","PLSQL"), ("Pod","Pod"), ("Pod 6","Pod 6"), ("PogoScript","PogoScript"), ("Polar","Polar"), ("Pony","Pony"), ("Portugol","Portugol"), ("PostCSS","PostCSS"), ("PostScript","PostScript"), ("POV-Ray SDL","POV-Ray SDL"), ("PowerBuilder","PowerBuilder"), ("Prisma","Prisma"), ("Processing","Processing"), ("Procfile","Procfile"), ("Proguard","Proguard"), ("Prolog","Prolog"), ("Promela","Promela"), ("Propeller Spin","Propeller Spin"), ("Protocol Buffer","Protocol Buffer"), ("Protocol Buffer Text Format","Protocol Buffer Text Format"), ("Public Key","Public Key"), ("Pug","Pug"), ("Puppet","Puppet"), ("Pure Data","Pure Data"), ("PureBasic","PureBasic"), ("PureScript","PureScript"), ("Pyret","Pyret"), ("Python console","Python console"), ("Python traceback","Python traceback"), ("q","q"), ("Q#","Q#"), ("QMake","QMake"), ("QML","QML"), ("Qt Script","Qt Script"), ("Quake","Quake"), ("R","R"), ("Racket","Racket"), ("Ragel","Ragel"), ("Raku","Raku"), ("RAML","RAML"), ("Rascal","Rascal"), ("Raw token data","Raw token data"), ("RBS","RBS"), ("RDoc","RDoc"), ("Readline Config","Readline Config"), ("REALbasic","REALbasic"), ("Reason","Reason"), ("ReasonLIGO","ReasonLIGO"), ("Rebol","Rebol"), ("Record Jar","Record Jar"), ("Red","Red"), ("Redcode","Redcode"), ("Redirect Rules","Redirect Rules"), ("Regular Expression","Regular Expression"), ("Ren'Py","Ren'Py"), ("RenderScript","RenderScript"), ("ReScript","ReScript"), ("reStructuredText","reStructuredText"), ("REXX","REXX"), ("Rez","Rez"), ("Rich Text Format","Rich Text Format"), ("Ring","Ring"), ("Riot","Riot"), ("RMarkdown","RMarkdown"), ("RobotFramework","RobotFramework"), ("robots.txt","robots.txt"), ("Roff","Roff"), ("Roff Manpage","Roff Manpage"), ("Rouge","Rouge"), ("RouterOS Script","RouterOS Script"), ("RPC","RPC"), ("RPGLE","RPGLE"), ("RPM Spec","RPM Spec"), ("RUNOFF","RUNOFF"), ("Sage","Sage"), ("SaltStack","SaltStack"), ("SAS","SAS"), ("Sass","Sass"), ("Scaml","Scaml"), ("Scenic","Scenic"), ("Scheme","Scheme"), ("Scilab","Scilab"), ("SCSS","SCSS"), ("sed","sed"), ("Self","Self"), ("SELinux Policy","SELinux Policy"), ("ShaderLab","ShaderLab"), ("ShellCheck Config","ShellCheck Config"), ("ShellSession","ShellSession"), ("Shen","Shen"), ("Sieve","Sieve"), ("Simple File Verification","Simple File Verification"), ("Singularity","Singularity"), ("Slash","Slash"), ("Slice","Slice"), ("Slim","Slim"), ("Smali","Smali"), ("Smalltalk","Smalltalk"), ("Smarty","Smarty"), ("Smithy","Smithy"), ("SmPL","SmPL"), ("SMT","SMT"), ("Snakemake","Snakemake"), ("Solidity","Solidity"), ("Soong","Soong"), ("SourcePawn","SourcePawn"), ("SPARQL","SPARQL"), ("Spline Font Database","Spline Font Database"), ("SQF","SQF"), ("SQL","SQL"), ("SQLPL","SQLPL"), ("Squirrel","Squirrel"), ("SRecode Template","SRecode Template"), ("SSH Config","SSH Config"), ("Stan","Stan"), ("Standard ML","Standard ML"), ("STAR","STAR"), ("Starlark","Starlark"), ("Stata","Stata"), ("STL","STL"), ("STON","STON"), ("StringTemplate","StringTemplate"), ("Stylus","Stylus"), ("SubRip Text","SubRip Text"), ("SugarSS","SugarSS"), ("SuperCollider","SuperCollider"), ("Svelte","Svelte"), ("SVG","SVG"), ("Sway","Sway"), ("Sweave","Sweave"), ("SWIG","SWIG"), ("SystemVerilog","SystemVerilog"), ("Talon","Talon"), ("Tcl","Tcl"), ("Tcsh","Tcsh"), ("Tea","Tea"), ("Terra","Terra"), ("TeX","TeX"), ("Texinfo","Texinfo"), ("Text","Text"), ("Textile","Textile"), ("TextMate Properties","TextMate Properties"), ("Thrift","Thrift"), ("TI Program","TI Program"), ("TL-Verilog","TL-Verilog"), ("TLA","TLA"), ("TOML","TOML"), ("TSQL","TSQL"), ("TSV","TSV"), ("TSX","TSX"), ("Turing","Turing"), ("Turtle","Turtle"), ("Twig","Twig"), ("TXL","TXL"), ("Type Language","Type Language"), ("Typst","Typst"), ("Unified Parallel C","Unified Parallel C"), ("Unity3D Asset","Unity3D Asset"), ("Unix Assembly","Unix Assembly"), ("Uno","Uno"), ("UnrealScript","UnrealScript"), ("UrWeb","UrWeb"), ("V","V"), ("Vala","Vala"), ("Valve Data Format","Valve Data Format"), ("VBA","VBA"), ("VBScript","VBScript"), ("VCL","VCL"), ("Velocity Template Language","Velocity Template Language"), ("Verilog","Verilog"), ("VHDL","VHDL"), ("Vim Help File","Vim Help File"), ("Vim Script","Vim Script"), ("Vim Snippet","Vim Snippet"), ("Visual Basic .NET","Visual Basic .NET"), ("Visual Basic 6.0","Visual Basic 6.0"), ("Volt","Volt"), ("Vue","Vue"), ("Vyper","Vyper"), ("Wavefront Material","Wavefront Material"), ("Wavefront Object","Wavefront Object"), ("WDL","WDL"), ("Web Ontology Language","Web Ontology Language"), ("WebAssembly","WebAssembly"), ("WebAssembly Interface Type","WebAssembly Interface Type"), ("WebIDL","WebIDL"), ("WebVTT","WebVTT"), ("Wget Config","Wget Config"), ("WGSL","WGSL"), ("Whiley","Whiley"), ("Wikitext","Wikitext"), ("Win32 Message File","Win32 Message File"), ("Windows Registry Entries","Windows Registry Entries"), ("wisp","wisp"), ("Witcher Script","Witcher Script"), ("Wollok","Wollok"), ("World of Warcraft Addon Data","World of Warcraft Addon Data"), ("Wren","Wren"), ("X BitMap","X BitMap"), ("X Font Directory Index","X Font Directory Index"), ("X PixMap","X PixMap"), ("X10","X10"), ("xBase","xBase"), ("XC","XC"), ("XCompose","XCompose"), ("XML","XML"), ("XML Property List","XML Property List"), ("Xojo","Xojo"), ("Xonsh","Xonsh"), ("XPages","XPages"), ("XProc","XProc"), ("XQuery","XQuery"), ("XS","XS"), ("XSLT","XSLT"), ("Xtend","Xtend"), ("Yacc","Yacc"), ("YAML","YAML"), ("YANG","YANG"), ("YARA","YARA"), ("YASnippet","YASnippet"), ("Yul","Yul"), ("ZAP","ZAP"), ("Zeek","Zeek"), ("ZenScript","ZenScript"), ("Zephir","Zephir"), ("Zig","Zig"), ("ZIL","ZIL"), ("Zimpl","Zimpl")]
     }
 
-access_token = getenv("ACCESS_TOKEN")
-
-headers = {
-    'Authorization': f'token {access_token}',
-    'Accept': 'application/vnd.github.v3+json',
-}
-
 app = Flask(__name__)
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template("404.html"), 404
+
+@app.errorhandler(422)
+def unprocessable_entity(e):
+    return render_template("422.html"), 422
 
 @app.route("/search")
 def search_redirect():
@@ -52,36 +74,40 @@ def home():
 
 @app.route('/users', methods=['GET'])
 def search_users():
-    """ searchs in users, repositories """
+    """ searchs for users in github using github api """
     username = request.args.get("q")
     lang = request.args.get("language", "")
     loc = request.args.get('location', "")
     sort_by = request.args.get('sort_by', "").split('_') if request.args.get('sort_by') else ['','']
 
+    # paramaters used by gitify
+    params_g = {
+        'q': username,
+        "sort_by": sort_by,
+        "location": loc,
+        "language": lang,
+        "per_page": USERS_PER_PAGE,
+        "page": int(request.args.get('page', 1))
+    }
     if not username:
-        return render_template('user_results.html', users=[], colors=colors, results=-1)
-
+        return render_template('user_results.html', users=[], options=options, results=-1, p=params_g, language=lang, q=username)
+    # parameters used in github api
     params = {
         'q': f'{username} location:"{loc}" language:"{lang}"',
         "sort": sort_by[0],
         "order": sort_by[1],
-        "per_page": 3
+        "per_page": USERS_PER_PAGE,
+        "page": int(request.args.get('page', 1))
     }
-
+    # search for the user
     req = requests.get(f"https://api.github.com/search/users", params=params, headers=headers)
-    print("<<<<<", req.url)
-    print(req.url)
     if req.status_code == 200:
         all_users = req.json()
-        print(all_users)
+        # print(all_users)
         users = []
         results_count = all_users['total_count']
 
-        print("====", all_users)
-        # the result will have 'items' key set to the list of users that match the key word
-        print(len(all_users['items']))
-
-        # looping through all of the results to access each user
+        # loops over all users and retrive necessary information about the user
         for user in all_users['items']:
             temp =  {
                 "username": user['login'],
@@ -89,11 +115,11 @@ def search_users():
                 "html_url": user['html_url']
             }
             # DEBUGGING
-            print("fetching for: ", user['login'])
+            # print("fetching for: ", user['login'])
             # inside a user result you will find 'url' that contains detailed information about the user, and store the info in users_info variable. e.g: https://api.github.com/repos/creytiv/re
             user_info = requests.get(user['url'], headers=headers).json()
             
-            # inside the user_info the 'followers' key holds the number of followers the user has
+            # fetching user's information
             temp['followers'] = user_info['followers']
             temp['following'] = user_info['following']
             temp['bio'] = user_info['bio']
@@ -113,88 +139,38 @@ def search_users():
             temp['languages'].append(('Others', 100 - remained))
             # adds the user's info to the list of users
             users.append(temp)
-        
-        # DEBUGGING: for visualising
-        # users = [{'username': 're', 'followers': 6, 'public_repos': 0, 'languages': [('Others', 100)]} , {'username': 'ReVanced', 'followers': 15925, 'public_repos': 28, 'languages': [('Java', 21.43), ('Kotlin', 21.43), ('Python', 14.29), ('Others', 42.85)]} , {'username': 're-ovo', 'followers': 413, 'public_repos': 136, 'languages': [('Java', 46.67), ('Kotlin', 26.67), ('JavaScript', 3.33), ('Others', 23.33)]} , {'username': 'vbty', 'followers': 210, 'public_repos': 151, 'languages': [('C++', 16.67), ('HTML', 10.0), ('Python', 10.0), ('Others', 63.33)]} , {'username': 'kanreisa', 'followers': 162, 'public_repos': 37, 'languages': [('JavaScript', 63.33), ('TypeScript', 16.67), ('C', 6.67), ('Others', 13.329999999999998)]} , {'username': 'lloc', 'followers': 90, 'public_repos': 96, 'languages': [('PHP', 43.33), ('JavaScript', 23.33), ('Python', 6.67), ('Others', 26.67)]} , {'username': 'citizenfx', 'followers': 386, 'public_repos': 66, 'languages': [('C++', 33.33), ('C#', 13.33), ('Go', 10.0), ('Others', 43.34)]} , {'username': 'rwfpl', 'followers': 648, 'public_repos': 18, 'languages': [('C++', 61.11), ('Python', 22.22), ('C', 5.56), ('Others', 11.11)]} , {'username': 'rescript-lang', 'followers': 260, 'public_repos': 19, 'languages': [('OCaml', 31.58), ('JavaScript', 21.05), ('ReScript', 15.79), ('Others', 31.580000000000013)]} , {'username': 'ReAbout', 'followers': 340, 'public_repos': 17, 'languages': [('Python', 17.65), ('C', 11.76), ('Java', 5.88), ('Others', 64.71000000000001)]} , {'username': 'krasimir', 'followers': 1958, 'public_repos': 210, 'languages': [('JavaScript', 76.67), ('HTML', 3.33), ('Dart', 3.33), ('Others', 16.67)]} , {'username': 'reZach', 'followers': 86, 'public_repos': 77, 'languages': [('JavaScript', 40.0), ('C#', 20.0), ('HTML', 13.33), ('Others', 26.67)]} , {'username': 'joe-re', 'followers': 64, 'public_repos': 99, 'languages': [('JavaScript', 33.33), ('TypeScript', 20.0), ('Ruby', 10.0), ('Others', 36.67)]} , {'username': 'akiross', 'followers': 68, 'public_repos': 75, 'languages': [('Go', 23.33), ('Rust', 13.33), ('Dockerfile', 13.33), ('Others', 50.010000000000005)]} , {'username': 'v-kolesnikov', 'followers': 134, 'public_repos': 176, 'languages': [('Ruby', 23.33), ('Clojure', 10.0), ('Elixir', 6.67), ('Others', 60.0)]} , {'username': 'ReCoded-Org', 'followers': 64, 'public_repos': 73, 'languages': [('JavaScript', 46.67), ('HTML', 16.67), ('CSS', 10.0), ('Others', 26.659999999999997)]} , {'username': 'remy', 'followers': 7511, 'public_repos': 333, 'languages': [('JavaScript', 56.67), ('HTML', 10.0), ('PHP', 6.67), ('Others', 26.659999999999997)]} , {'username': 'Crauzer', 'followers': 234, 'public_repos': 64, 'languages': [('C#', 40.0), ('C++', 6.67), ('Rust', 3.33), ('Others', 50.0)]} , {'username': 'redrgnl', 'followers': 27, 'public_repos': 20, 'languages': [('HTML', 25.0), ('JavaScript', 20.0), ('PHP', 15.0), ('Others', 40.0)]} , {'username': 'reMarkable', 'followers': 185, 'public_repos': 95, 'languages': [('C++', 20.0), ('C', 16.67), ('Go', 13.33), ('Others', 50.0)]} , {'username': 'Re4son', 'followers': 586, 'public_repos': 132, 'languages': [('C', 40.0), ('Java', 10.0), ('Others', 50.0)]} , {'username': 'scorelab', 'followers': 170, 'public_repos': 109, 'languages': [('JavaScript', 33.33), ('HTML', 16.67), ('CSS', 6.67), ('Others', 43.33)]} , {'username': 'hanxiao', 'followers': 3706, 'public_repos': 105, 'languages': [('Python', 30.0), ('JavaScript', 13.33), ('CSS', 3.33), ('Others', 53.34)]} , {'username': 'renovate-bot', 'followers': 1234, 'public_repos': 8824, 'languages': [('Go', 6.67), ('C++', 3.33), ('Blade', 3.33), ('Others', 86.67)]} , {'username': 'renatogroffe', 'followers': 2671, 'public_repos': 1313, 'languages': [('C#', 66.67), ('HTML', 13.33), ('PowerShell', 6.67), ('Others', 13.329999999999998)]} , {'username': 'neoremind', 'followers': 674, 'public_repos': 49, 'languages': [('Java', 66.67), ('C++', 6.67), ('Shell', 6.67), ('Others', 19.989999999999995)]} , {'username': 'rac14', 'followers': 28, 'public_repos': 161, 'languages': [('PHP', 33.33), ('Java', 6.67), ('C++', 3.33), ('Others', 56.67)]} , {'username': 'gpakosz', 'followers': 382, 'public_repos': 35, 'languages': [('C', 20.0), ('Ruby', 16.67), ('C++', 16.67), ('Others', 46.66)]} , {'username': 'Guss-droid', 'followers': 51, 'public_repos': 43, 'languages': [('TypeScript', 70.0), ('JavaScript', 16.67), ('Ruby', 6.67), ('Others', 6.659999999999997)]} , {'username': 'mreferre', 'followers': 155, 'public_repos': 47, 'languages': [('Shell', 20.0), ('JavaScript', 6.67), ('Go', 6.67), ('Others', 66.66)]}]
-        
+
         # print(users)
-        # ^^^ NOTE: print it for if you need DEBUGGING
-
-
-        print(users)
-        return render_template('user_results.html', users=users, colors= colors, results=results_count)
+        return render_template('user_results.html', users=users, options=options, results=results_count, p=params_g, language=lang,q=username)
     else:
         return f"Error: status code - {req.status_code}"
 
 
 
-
-@app.route('/trending')
-def trending_repos():
-    today = datetime.date.today()
-    one_month_ago = today - datetime.timedelta(days=30)
-    one_month_ago_str = one_month_ago.strftime("%Y-%m-%d")
-
-    params = {
-        "q": f"created:>{one_month_ago_str}",
-        "sort": "stars",
-        "order": "desc",
-        "per_page": 3
-    }
-    colors = {
-            "Python": "#3776AB", # Blue
-            "Java": "#B07219", # Brown
-            "JavaScript": "#F7DF1E", # Yellow
-            "C#": "#178600", # Green
-            "C++": "#00599C", # Dark blue
-            "PHP": "#777BB4", # Purple
-            "R": "#198CE7", # Light blue
-            "TypeScript": "#3178C6", # Cyan
-            "Swift": "#FA7343", # Orange
-            "C": "#438EFF", # Sky blue
-            "Kotlin": "#F18E33", # Amber
-            "Makefile": "#427B58", # Olive green
-            "Others": "#666666" # gray 
-    }
-    response = requests.get("https://api.github.com/search/repositories", params=params, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        items = data["items"]
-        repos = []
-        print(f"Found {len(items)} trending repositories:")
-        for item in items:
-            temp = {}
-            temp['name'] = item['name']
-            temp['description'] = item['description']
-            temp['html_url'] = item['html_url']
-            temp['owner'] = item['owner']['login']
-            temp['avatar'] = item['owner']['avatar_url']
-            temp['language'] = item['language']
-            temp['stars'] = item['stargazers_count']
-            temp['forks'] = item['forks_count']
-            temp['topics'] = item['topics']
-            repos.append(temp)
-        return render_template('repo_results.html', repos=repos, colors=colors, results=1)
-
-    else:
-        return f"Error: status code - {response.status_code}"
-
-   
+ 
 @app.route('/repos', methods=['GET'])
 def search_repos():
     """ search repos by the given key word """
+
     q = request.args.get("q")
     sort_by = request.args.get('sort_by').split('_') if request.args.get('sort_by') else ['','']
     lang = request.args.get("language", "")
-
+    params_g = {
+        'q': q,
+        "sort_by": request.args.get('sort_by', ""),
+        "language": lang,
+        "per_page": REPOS_PER_PAGE,
+        "page": int(request.args.get('page', 1))
+    }
     if not q:
-        return render_template('repo_results.html', results=-1)
+        return render_template('repo_results.html', results=-1, page=0, options=options, p=params_g)
+
     params = {
-        'q': f'{q} language:"{lang}"',
+        'q': f'{q} language:"{lang}"' if lang else q,
         "sort": sort_by[0],
         "order": sort_by[1],
-        "per_page": 3
+        "per_page": REPOS_PER_PAGE,
+        "page": int(request.args.get('page', 1))
     }
     colors = {
             "Python": "#3776AB", # Blue
@@ -220,7 +196,7 @@ def search_repos():
         results_count = data['total_count']
 
         repos = []
-        print(f"Found {len(items)} trending repositories:")
+        # print(f"Found {len(items)} trending repositories:")
         for item in items:
             temp = {}
             temp['name'] = item['name']
@@ -233,10 +209,68 @@ def search_repos():
             temp['forks'] = item['forks_count']
             temp['topics'] = item['topics']
             repos.append(temp)
-        return render_template('repo_results.html', repos=repos, colors=colors, results=results_count)
+        return render_template('repo_results.html', repos=repos, options=options, results=results_count, p=params_g)
+    elif response.status_code == 422:
+        abort(422)
+    else:
+        abort(404)
+    
+    
+
+
+@app.route('/trending')
+def trending_repos():
+    today = datetime.date.today()
+    one_month_ago = today - datetime.timedelta(days=30)
+    one_month_ago_str = one_month_ago.strftime("%Y-%m-%d")
+
+    params = {
+        "q": f"created:>{one_month_ago_str}",
+        "sort": "stars",
+        "order": "desc",
+        "per_page": 8,
+    }
+    colors = {
+            "Python": "#3776AB", # Blue
+            "Java": "#B07219", # Brown
+            "JavaScript": "#F7DF1E", # Yellow
+            "C#": "#178600", # Green
+            "C++": "#00599C", # Dark blue
+            "PHP": "#777BB4", # Purple
+            "R": "#198CE7", # Light blue
+            "TypeScript": "#3178C6", # Cyan
+            "Swift": "#FA7343", # Orange
+            "C": "#438EFF", # Sky blue
+            "Kotlin": "#F18E33", # Amber
+            "Makefile": "#427B58", # Olive green
+            "Others": "#666666" # gray 
+    }
+    response = requests.get("https://api.github.com/search/repositories", params=params, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        items = data["items"]
+        repos = []
+        # print(f"Found {len(items)} trending repositories:")
+        for item in items:
+            temp = {}
+            temp['name'] = item['name']
+            temp['description'] = item['description']
+            temp['html_url'] = item['html_url']
+            temp['owner'] = item['owner']['login']
+            temp['avatar'] = item['owner']['avatar_url']
+            temp['language'] = item['language']
+            temp['stars'] = item['stargazers_count']
+            temp['forks'] = item['forks_count']
+            temp['topics'] = item['topics']
+            repos.append(temp)
+        return render_template('trending.html', repos=repos, options=options, results=1, p=params)
+
     else:
         return f"Error: status code - {response.status_code}"
-    
+
+  
+
 
 @app.route('/testing')
 def testing():
@@ -260,15 +294,13 @@ def testing():
     # return "testing"
     
     # test /users/re
-    users = [{'username': 'adamwiggins', 'avatar': '', 'html_url': 'https://github.com/adamwiggins', 'followers': 970, 'following': 16, 'bio': 'Digital toolmaker', 'location': 'Berlin', 'public_repos': 99, 'languages': [('Ruby', 70.0), ('Python', 6.67), ('Elm', 6.67), ('Others', 16.659999999999997)]}, {'username': 'emmvs', 'avatar': '', 'html_url': 'https://github.com/emmvs', 'followers': 55, 'following': 51, 'bio': 'Hey there 🤟', 'location': 'Berlin', 'public_repos': 38, 'languages': [('Ruby', 83.33), ('HTML', 6.67), ('Shell', 3.33), ('Others', 6.670000000000002)]}, {'username': 'plutov', 'avatar': '', 'html_url': 'https://github.com/plutov', 'followers': 583, 'following': 96, 'bio': 'Gopher https://www.youtube.com/packagemain', 'location': 'Berlin, Germany', 'public_repos': 53, 'languages': [('Go', 56.67), ('JavaScript', 6.67), ('Shell', 6.67), ('Others', 29.989999999999995)]}]
-    # users = [{'username': 'ReVanced', 'followers': 15937, 'following': 0, 'public_repos': 28, 'languages': [('Java', 21.43), ('Kotlin', 21.43), ('Python', 14.29), ('Others', 42.85)]}, {'username': 'rengwuxian', 'followers': 7913, 'following': 25, 'public_repos': 60, 'languages': [('Kotlin', 93.33), ('Java', 6.67), ('Others', 0.0)]}, {'username': 'remy', 'followers': 7511, 'following': 6, 'public_repos': 333, 'languages': [('JavaScript', 56.67), ('HTML', 10.0), ('PHP', 6.67), ('Others', 26.659999999999997)]}]
-    # users = [{'username': 'mattn', 'avatar': 'https://avatars.githubusercontent.com/u/10111?v=4', 'html_url': 'https://github.com/mattn', 'followers': 11177, 'following': 1705, 'bio': 'Long-time Golang user&contributor, Google Dev Expert for Go, and author of many Go tools, Vim plugin author. Windows hacker C#/Java/C/C++, GitHubStars\r\n', 'location': 'Osaka, Japan', 'public_repos': 1922, 'languages': [('Go', 40.0), ('Perl', 13.33), ('C', 6.67), ('Others', 40.0)]}, {'username': 'PacktPublishing', 'avatar': 'https://avatars.githubusercontent.com/u/10974906?v=4', 'html_url': 'https://github.com/PacktPublishing', 'followers': 8861, 'following': 0, 'bio': 'Providing books, eBooks, video tutorials, and articles for IT developers, administrators, and users.', 'location': 'Birmingham, UK', 'public_repos': 8089, 'languages': [('Python', 10.0), ('Rich Text Format', 6.67), ('Java', 6.67), ('Others', 76.66)]}, {'username': 'ghost', 'avatar': 'https://avatars.githubusercontent.com/u/10137?v=4', 'html_url': 'https://github.com/ghost', 'followers': 8170, 'following': 0, 'bio': "Hi, I'm @ghost! I take the place of user accounts that have been deleted.\n:ghost:\n", 'location': 'Nothing to see here, move along.', 'public_repos': 0, 'languages': [('Others', 100)]}, {'username': 'microsoftopensource', 'avatar': 'https://avatars.githubusercontent.com/u/22527892?v=4', 'html_url': 'https://github.com/microsoftopensource', 'followers': 4364, 'following': 0, 'bio': 'This is the open source management service account used for performing key GitHub operations on behalf of Microsoft employees and users.', 'location': 'Redmond, WA', 'public_repos': 0, 'languages': [('Others', 100)]}, {'username': 'ireade', 'avatar': 'https://avatars.githubusercontent.com/u/8677283?v=4', 'html_url': 'https://github.com/ireade', 'followers': 2902, 'following': 29, 'bio': 'Frontend Developer and User Interface Designer', 'location': None, 'public_repos': 126, 'languages': [('HTML', 36.67), ('CSS', 20.0), ('JavaScript', 20.0), ('Others', 23.33)]}, {'username': 'storybookjs', 'avatar': 'https://avatars.githubusercontent.com/u/22632046?v=4', 'html_url': 'https://github.com/storybookjs', 'followers': 2830, 'following': 0, 'bio': 'Build bulletproof user interfaces', 'location': None, 'public_repos': 105, 'languages': [('TypeScript', 53.33), ('JavaScript', 40.0), ('Others', 6.670000000000002)]}]
-    return render_template('user_results.html', users=users, colors=colors, results=20)
+    # users = [{'username': 'adamwiggins', 'avatar': '', 'html_url': 'https://github.com/adamwiggins', 'followers': 970, 'following': 16, 'bio': 'Digital toolmaker', 'location': 'Berlin', 'public_repos': 99, 'languages': [('Ruby', 70.0), ('Python', 6.67), ('Elm', 6.67), ('Others', 16.659999999999997)]}, {'username': 'emmvs', 'avatar': '', 'html_url': 'https://github.com/emmvs', 'followers': 55, 'following': 51, 'bio': 'Hey there 🤟', 'location': 'Berlin', 'public_repos': 38, 'languages': [('Ruby', 83.33), ('HTML', 6.67), ('Shell', 3.33), ('Others', 6.670000000000002)]}, {'username': 'plutov', 'avatar': '', 'html_url': 'https://github.com/plutov', 'followers': 583, 'following': 96, 'bio': 'Gopher https://www.youtube.com/packagemain', 'location': 'Berlin, Germany', 'public_repos': 53, 'languages': [('Go', 56.67), ('JavaScript', 6.67), ('Shell', 6.67), ('Others', 29.989999999999995)]}]
+    # return render_template('user_results.html', users=users, colors=colors, results=20)
 
 
     # test /repos/abc
-    # repos = [{'name': 'abcd', 'description': None, 'html_url': 'https://github.com/nlpxucan/abcd', 'owner': 'nlpxucan', 'stars': 7640, 'forks': 596, 'topics': []}, {'name': 'abcjs', 'description': 'javascript for rendering abc music notation', 'html_url': 'https://github.com/paulrosen/abcjs', 'owner': 'paulrosen', 'stars': 1704, 'forks': 261, 'topics': ['abc-notation', 'abcjs', 'javascript', 'midi', 'music', 'music-notation', 'music-player', 'sheet-music']}, {'name': 'bitcoin-abc', 'description': 'Bitcoin ABC develops node software and infrastructure for the eCash project. This a mirror of the official Bitcoin-ABC repository.  Please see README.md', 'html_url': 'https://github.com/Bitcoin-ABC/bitcoin-abc', 'owner': 'Bitcoin-ABC', 'stars': 1126, 'forks': 720, 'topics': ['bitcoin', 'bitcoin-abc', 'ecash', 'xec']}, {'name': 'FlutterBasicWidgets', 'description': 'ABC of Flutter widgets. Intended for super beginners at Flutter. Play with 35+ examples in DartPad directly and get familiar with various basic widgets in Flutter', 'html_url': 'https://github.com/PoojaB26/FlutterBasicWidgets', 'owner': 'PoojaB26', 'stars': 864, 'forks': 286, 'topics': ['basic', 'beginner', 'dart', 'examples', 'flutter', 'playground', 'widgets']}, {'name': 'abc', 'description': 'ABC: System for Sequential Logic Synthesis and Formal Verification', 'html_url': 'https://github.com/berkeley-abc/abc', 'owner': 'berkeley-abc', 'stars': 737, 'forks': 478, 'topics': []}, {'name': 'ABCalendarPicker', 'description': 'Fully configurable iOS calendar UI component with multiple layouts and smooth animations.', 'html_url': 'https://github.com/k06a/ABCalendarPicker', 'owner': 'k06a', 'stars': 711, 'forks': 125, 'topics': []}, {'name': 'abc', 'description': 'A better Deno framework to create web application.', 'html_url': 'https://github.com/zhmushan/abc', 'owner': 'zhmushan', 'stars': 598, 'forks': 48, 'topics': ['deno', 'framework', 'http', 'server']}, {'name': 'ABCustomUINavigationController', 'description': 'Custom UINavigationController. SquaresFlips and Cube effects', 'html_url': 'https://github.com/andresbrun/ABCustomUINavigationController', 'owner': 'andresbrun', 'stars': 499, 'forks': 74, 'topics': []}, {'name': 'abc', 'description': 'Power of appbase.io via CLI, with nifty imports from your favorite data sources', 'html_url': 'https://github.com/appbaseio/abc', 'owner': 'appbaseio', 'stars': 459, 'forks': 50, 'topics': ['appbase', 'cli', 'elasticsearch', 'etl']}, {'name': 'RABCDAsm', 'description': 'Robust ABC (ActionScript Bytecode) [Dis-]Assembler', 'html_url': 'https://github.com/CyberShadow/RABCDAsm', 'owner': 'CyberShadow', 'stars': 413, 'forks': 98, 'topics': []}]
-    # return render_template('repo_results.html', repos=repos)
+    repos = [{'name': 'abcd', 'description': None, 'html_url': 'https://github.com/nlpxucan/abcd', 'owner': 'nlpxucan', 'stars': 7640, 'forks': 596, 'topics': []}, {'name': 'abcjs', 'description': 'javascript for rendering abc music notation', 'html_url': 'https://github.com/paulrosen/abcjs', 'owner': 'paulrosen', 'stars': 1704, 'forks': 261, 'topics': ['abc-notation', 'abcjs', 'javascript', 'midi', 'music', 'music-notation', 'music-player', 'sheet-music']}, {'name': 'bitcoin-abc', 'description': 'Bitcoin ABC develops node software and infrastructure for the eCash project. This a mirror of the official Bitcoin-ABC repository.  Please see README.md', 'html_url': 'https://github.com/Bitcoin-ABC/bitcoin-abc', 'owner': 'Bitcoin-ABC', 'stars': 1126, 'forks': 720, 'topics': ['bitcoin', 'bitcoin-abc', 'ecash', 'xec']}, {'name': 'FlutterBasicWidgets', 'description': 'ABC of Flutter widgets. Intended for super beginners at Flutter. Play with 35+ examples in DartPad directly and get familiar with various basic widgets in Flutter', 'html_url': 'https://github.com/PoojaB26/FlutterBasicWidgets', 'owner': 'PoojaB26', 'stars': 864, 'forks': 286, 'topics': ['basic', 'beginner', 'dart', 'examples', 'flutter', 'playground', 'widgets']}, {'name': 'abc', 'description': 'ABC: System for Sequential Logic Synthesis and Formal Verification', 'html_url': 'https://github.com/berkeley-abc/abc', 'owner': 'berkeley-abc', 'stars': 737, 'forks': 478, 'topics': []}, {'name': 'ABCalendarPicker', 'description': 'Fully configurable iOS calendar UI component with multiple layouts and smooth animations.', 'html_url': 'https://github.com/k06a/ABCalendarPicker', 'owner': 'k06a', 'stars': 711, 'forks': 125, 'topics': []}, {'name': 'abc', 'description': 'A better Deno framework to create web application.', 'html_url': 'https://github.com/zhmushan/abc', 'owner': 'zhmushan', 'stars': 598, 'forks': 48, 'topics': ['deno', 'framework', 'http', 'server']}, {'name': 'ABCustomUINavigationController', 'description': 'Custom UINavigationController. SquaresFlips and Cube effects', 'html_url': 'https://github.com/andresbrun/ABCustomUINavigationController', 'owner': 'andresbrun', 'stars': 499, 'forks': 74, 'topics': []}, {'name': 'abc', 'description': 'Power of appbase.io via CLI, with nifty imports from your favorite data sources', 'html_url': 'https://github.com/appbaseio/abc', 'owner': 'appbaseio', 'stars': 459, 'forks': 50, 'topics': ['appbase', 'cli', 'elasticsearch', 'etl']}, {'name': 'RABCDAsm', 'description': 'Robust ABC (ActionScript Bytecode) [Dis-]Assembler', 'html_url': 'https://github.com/CyberShadow/RABCDAsm', 'owner': 'CyberShadow', 'stars': 413, 'forks': 98, 'topics': []}]
+    return render_template('repo_results.html', repos=repos, results=len(repos))
 
 
     # test /trending
@@ -279,3 +311,13 @@ def testing():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+# limitation
+"""
+{
+    "message": "Only the first 1000 search results are available",
+    "documentation_url": "https://docs.github.com/v3/search/"
+}
+"""
+

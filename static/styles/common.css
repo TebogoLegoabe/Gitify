@@ -20,3 +20,23 @@ body .container {
 .stats span {
     font-size: 20px;
 }
+
+.page_nav {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    padding: 0px;
+}
+.page_nav li a {
+    border: white 1px solid;
+    border-radius: 3px;
+    margin: 0px 3px;
+    padding: 3px;
+    text-decoration: none;
+}
+.page_nav .current_page, .page_nav li a:hover {
+    background-color: lightblue;
+    color: darkblue;
+}
+

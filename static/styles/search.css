@@ -155,3 +155,30 @@ footer p {
     border: 1px #777777 solid;
     background-color: transparent;
 }
+.submit_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: red; */
+}
+.filter .section li.submit_container{
+    display: flex;
+    justify-content: center;
+    padding-left: 0px;
+    width: 100%;
+    margin-bottom: 0px;
+}
+button.search_submit_button {
+    margin: 5px;
+    color: white;
+    padding: 3px 5px;
+    background-color: #00072d;
+    border-radius: 5px;
+    border: 1px solid;
+    font-size: large;
+    
+}
+button.search_submit_button:hover {
+    background-color: lightblue;
+    color: darkblue;
+}

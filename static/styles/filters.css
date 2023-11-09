@@ -72,4 +72,7 @@ button.search_submit_button {
 .query:focus {
     outline: none;
 }
+.toggle-button:hover {
+    color: lightblue;
+}
 
