@@ -12,7 +12,7 @@ Gitify is a GitHub Stats API that allows users to retrieve comprehensive statist
 - [Usage](#usage)
 - [Examples of Use](#examples-of-use)
 - [Issues](#issues)
-- [ATHORS](#Authors)
+- [Athors](#Authors)
 - [Deployment](Deployment)
 
 ## Project Overview
@@ -54,11 +54,12 @@ See practical examples of how to use the GitHub Stats API in the [Examples of Us
 
 If you encounter any issues or bugs while using the GitHub Stats API, please report them in the [Issues](#issues) section. We appreciate your feedback and will work to resolve any problems promptly.
 
+##Link to the site
+
+Gitify - [Gitify](http://web-02.shakir.tech/gitify)
+
 ## Authors
 
 Tebogo Legoabe - [Github](https://github.com/TebogoLegoabe) / [LinkedIn](https://www.linkedin.com/in/tebogo-legoabe)
 Shakir Muhammedsaid - [Github](https://github.com/Shakir-ahmed1) / [LinkedIn](https://www.linkedin.com/in/shakir-ahmedsalih10)
 
-## Link to deployed site
-
-Gitify - [Gitify](http://web-02.shakir.tech/gitify)
