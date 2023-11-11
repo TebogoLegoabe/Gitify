@@ -33,7 +33,7 @@ The objective of this project is to create a user-friendly API that simplifies t
 ## Environment
 
 The Gitify is developed using python and flask. It interacts with the GitHub API and requires the use of OAuth tokens for authentication.
-dependencies - python, flask, requests. Here's the user interface ![Alt Text](images/Screenshot_20231111_195354_Chrome.jpg)
+dependencies - python, flask, requests. Here's the user interface ![Alt Text](/Home/pictures/Screenshot_20231111_195354_Chrome.jpg)
 
 ## Usage
 
