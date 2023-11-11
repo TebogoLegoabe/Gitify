@@ -5,8 +5,9 @@ Gitify is a GitHub Stats API that allows users to retrieve comprehensive statist
 ![GitHub Image](https://crowdbotics.ghost.io/content/images/2019/07/github.jpg)
 
 ## Table of Contents
-- [Project Overview](#Project Overview)
-- [key Functionality](#Key Functionality)
+
+- [Project Overview](#Project-Overview)
+- [key Functionality](#Key-Functionality)
 - [Environment](#environment)
 - [Usage](#usage)
 - [Examples of Use](#examples-of-use)
@@ -58,6 +59,6 @@ If you encounter any issues or bugs while using the GitHub Stats API, please rep
 Tebogo Legoabe - [Github](https://github.com/TebogoLegoabe) / [LinkedIn](https://www.linkedin.com/in/tebogo-legoabe)
 Shakir Muhammedsaid - [Github](https://github.com/Shakir-ahmed1) / [LinkedIn](https://www.linkedin.com/in/shakir-ahmedsalih10)
 
-## Link to Deployed site
+## Link to deployed site
 
 Gitify - [Gitify](http://web-02.shakir.tech/gitify)
