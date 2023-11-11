@@ -54,7 +54,7 @@ See practical examples of how to use the GitHub Stats API in the [Examples of Us
 
 If you encounter any issues or bugs while using the GitHub Stats API, please report them in the [Issues](#issues) section. We appreciate your feedback and will work to resolve any problems promptly.
 
-##Link to the site
+## Link to the site
 
 Gitify - [Gitify](http://web-02.shakir.tech/gitify)
 
