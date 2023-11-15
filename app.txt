@@ -4,6 +4,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
+# https://api.github.com/search/users?q=abcde
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///github_users.db'  # SQLite database file
 #db.init_app(app)
 
