@@ -1,14 +1,27 @@
 # Gitify 
 
-Gitify is a GitHub Stats API that allows users to retrieve comprehensive statistics and insights for any GitHub user. This API provides a user-friendly interface to access a wide range of data related to GitHub users, repositories, commits, followers, and more.
+Gitify is a GitHub Stats API that allows users to retrieve comprehensive statistics and insights for any GitHub user. This API provides a user-friendly interface to access a wide range of data related to GitHub users, repositories, commits, followers, etc. It also allows users to sort the search by number of stars, most forks,updates etc.
+
+![GitHub Image](https://crowdbotics.ghost.io/content/images/2019/07/github.jpg)
+
+## Table of Contents
+
+- [Project Overview](#Project-Overview)
+- [key Functionality](#Key-Functionality)
+- [Environment](#environment)
+- [Usage](#usage)
+- [Examples of Use](#examples-of-use)
+- [Issues](#issues)
+- [Athors](#Authors)
+- [Deployment](Deployment)
 
 ## Project Overview
 
-The goal of this project is to create an easy-to-use API that simplifies the process of collecting and presenting GitHub user statistics. Whether you're a developer looking to assess your own GitHub activity or an organization wanting to analyze contributors, the GitHub Stats API is a valuable resource.
+The objective of this project is to create a user-friendly API that simplifies the process of retrieving and presenting GitHub user statistics. It retrieves information such as repository details, follower and following counts, trending repositories, and more. Whether you're a developer assessing your GitHub activity or an organization looking to analyzing contribution of your employees,looking to hire new developer in the companies. Gitify allows you to easily access their stats. Users can search for trending repositories, Gitify offers these features and more.
 
-### Key Functionalities
+## Key Functionalities
 
-- **User Stats:** Retrieve detailed statistics about a GitHub user, including their repositories, commits, issues, and more.
+- **User Stats:** Retrieve detailed statistics about a GitHub user, including their repositories, commits,languages, followers, and following.
 
 - **Repository Insights:** Get in-depth information about a specific GitHub repository, including contributors, commit history, and open issues.
 
@@ -18,19 +31,10 @@ The goal of this project is to create an easy-to-use API that simplifies the pro
 
 - **Collaboration Metrics:** Assess user collaboration by analyzing contributions to other repositories and pull request reviews.
 
-## Table of Contents
-
-- [Environment](#environment)
-- [Usage](#usage)
-- [Examples of Use](#examples-of-use)
-- [Issues](#issues)
-- [ATHORS](#Authors)
-
 ## Environment
 
 The Gitify is developed using python and flask. It interacts with the GitHub API and requires the use of OAuth tokens for authentication.
-dependencies - python, flask, requests
-
+dependencies - python, flask, requests.
 ## Usage
 
 clone the repo.
@@ -50,7 +54,12 @@ See practical examples of how to use the GitHub Stats API in the [Examples of Us
 
 If you encounter any issues or bugs while using the GitHub Stats API, please report them in the [Issues](#issues) section. We appreciate your feedback and will work to resolve any problems promptly.
 
-## AUTHORS
+## Link to the site
+
+Gitify - [Gitify](http://web-02.shakir.tech/gitify)
+
+## Authors
 
 Tebogo Legoabe - [Github](https://github.com/TebogoLegoabe) / [LinkedIn](https://www.linkedin.com/in/tebogo-legoabe)
 Shakir Muhammedsaid - [Github](https://github.com/Shakir-ahmed1) / [LinkedIn](https://www.linkedin.com/in/shakir-ahmedsalih10)
+
