@@ -9,6 +9,9 @@
     <link rel="stylesheet" type="text/css" href="../static/styles/user.css">
     <link rel="stylesheet" type="text/css" href="../static/styles/repo.css">
     <link rel="icon" href="../static/images/icon.png" />
+
+    {# select title based on the urls #}
+
     {% if request.path == "/users" %}
     <title>User results</title>
     {% elif request.path == "/repos" %}
@@ -28,10 +31,16 @@
     </style>
   </head>
   <body>
+    <!--
+      header
+    -->
     <header>
       <span class="logo"><img src="../static/images/gitify_logo_light.png" alt="gitify logo"></span>
 	  <div class="search_bar">
-
+      <!--
+        Form for searching and filtering
+      -->
+      {# changes the action made by the form based on the uri of the request #}
       {% if request.path == "/users" %}
       <form action="{{url_for('search_users')}}" method="get">
         {% elif request.path == "/repos" %}
@@ -54,6 +63,7 @@
             <li>
               <label for="sort_by">Sort by :</label>
               <select id="sort_by" name="sort_by" title="sort_by" class="sort_by">
+                {# it displays all the sorting options#}
                 {% for option in options.sort_by %}
                 {% if option[0] == p.sort_by %}
                   <option selected value="{{option[0]}}">{{option[1]}}</option>
@@ -68,6 +78,7 @@
               <select id="filter-language" name="language" class="filter-language">
                 <option value="">Any Language</option>
                 <optgroup label="Popular">
+                  {# displays all options of popular languages available #}
                   {% for option in options.popular_lang %}
                   {% if option[0] == p.language %}
                     <option selected value="{{option[0]}}">{{option[1]}}</option>
@@ -77,6 +88,7 @@
                   {% endfor %}
                 </optgroup>
                 <optgroup label="Everything else">
+                  {# displays all options of non popular languages available #}
                   {% for option in options.everything_lang %}
                   {% if option[0] == p.language %}
                     <option selected value="{{option[0]}}">{{option[1]}}</option>
@@ -88,6 +100,7 @@
                 </optgroup>
               </select>
             </li>
+            {# display location filtering if the path is in "/users" #}
             {% if request.path == "/users" %}
             <li>
               <label for="filter-location">Location :</label>
@@ -103,37 +116,22 @@
   
           </form>
     </div>
+      <!--
+        Navigations
+      -->
       <div class="nav">
         <a href="{{url_for('trending_repos')}}" class="first-nav">🔥 Trending</a>
         <a href="{{url_for('home')}}">🔎 Search</a>
       </div>
     </header>
+    {# a block element that displays that can be extended #}
     {% block content %}
     {% endblock content %}
+    <!--
+      footer
+    -->
     <footer>
         <p>© 2023 Gitify</p>
     </footer>
   </body>
 </html>
-
-
-
-
-<script>
-  var button = document.getElementsByClassName("toggle-button")[0];
-  var filters = document.getElementsByClassName("section")[0];
-
-  // Define a function to toggle the filters visibility
-  function toggleFilters() {
-    // If the filters are hidden, show them and change the button text
-    console.log(filters.style.display)
-    if (filters.style.display == "none" || filters.style.display == "") {
-      filters.style.display = "block";
-      button.innerHTML = "filters -";
-    } else {
-      // If the filters are visible, hide them and change the button text
-      filters.style.display = "none";
-      button.innerHTML = "filters +";
-    }
-  }
-</script>

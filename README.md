@@ -1,8 +1,8 @@
 # Gitify 
 
-Gitify is a GitHub Stats API that allows users to retrieve comprehensive statistics and insights for any GitHub user. This API provides a user-friendly interface to access a wide range of data related to GitHub users, repositories, commits, followers, etc. It also allows users to sort the search by number of stars, most forks,updates etc.
+Gitify is a GitHub Stats API that allows users to retrieve comprehensive information about users and repositories by searching the using github search api. This API provides a user-friendly interface to access a wide range of data related to GitHub users, repositories etc. It also allows users to sort the search by number of stars, most forks, relevance etc.
 
-![GitHub Image](https://crowdbotics.ghost.io/content/images/2019/07/github.jpg)
+![Gitify Image](home_page_screenshot.png)
 
 ## Table of Contents
 
@@ -17,38 +17,37 @@ Gitify is a GitHub Stats API that allows users to retrieve comprehensive statist
 
 ## Project Overview
 
-The objective of this project is to create a user-friendly API that simplifies the process of retrieving and presenting GitHub user statistics. It retrieves information such as repository details, follower and following counts, trending repositories, and more. Whether you're a developer assessing your GitHub activity or an organization looking to analyzing contribution of your employees,looking to hire new developer in the companies. Gitify allows you to easily access their stats. Users can search for trending repositories, Gitify offers these features and more.
+The objective of this project is to create a user-friendly API that simplifies the process of retrieving and presenting GitHub user statistics. It retrieves information such as  followers and following counts, trending repositories, stars . Whether you're a developer assessing your GitHub activity or an organization looking to analyzing contribution of your employees,looking to hire new developer in the companies. Gitify allows you to easily access their stats by just searching their name. Users can search for trending repositories, Gitify offers these features and more.
 
 ## Key Functionalities
 
-- **User Stats:** Retrieve detailed statistics about a GitHub user, including their repositories, commits,languages, followers, and following.
+- **User Search:** Search for GitHub users based on various criterias, such as programming language expertise or location of the user, and can be sorted by number of stars, forks, and recently updated.
 
-- **Repository Insights:** Get in-depth information about a specific GitHub repository, including contributors, commit history, and open issues.
+- **Repository Search:** Search for GitHub repositories based on various critreias, such as programming language and can be sorted by number of stars, forks, and recently updated.
 
-- **User Search:** Search for GitHub users based on various criteria, such as programming language expertise or location.
+- **Trending repositories** displays trending repositories in the current month
 
-- **Recent Activity:** Monitor a user's recent GitHub activity, including push events, issue creation, and pull request activity.
+- **Pangination of results** displays results in different pages instead of displaying all results in one page.
 
-- **Collaboration Metrics:** Assess user collaboration by analyzing contributions to other repositories and pull request reviews.
+- **Filtering results** when searching for repositories or users, Gitify has features for filtering results based on the location of the user and the programming language usage of the user and repositories.
 
 ## Environment
 
-The Gitify is developed using python and flask. It interacts with the GitHub API and requires the use of OAuth tokens for authentication.
-dependencies - python, flask, requests.
+The Gitify is developed using python and flask for the backend and HTML and CSS for the frontend. It interacts with the GitHub search API and requires the use of OAuth tokens for authentication.
+python packages dependencies - flask, requests.
+
 ## Usage
 
 clone the repo.
-add github access token. for ubuntu `export ACCESS_TOKEN="place_your_token_here"`
-run `python app.py` # it will open the app with the debuggin on
-navigate to home page http://127.0.0.1:5000
+add github access token as environment variable (ACCESS_TOKEN). for ubuntu `export ACCESS_TOKEN="place_your_token_here"`, or `set ACCESS_TOKEN="place_your_token_here"` for windows command line.
+run `python app.py`
+navigate to home page in http://127.0.0.1:5000
 
 ## Examples of Use
 to look for trending repositories - `http://127.0.0.1:5000/trending`
 to search for users by user name - `http://127.0.0.1:5000/users`- type key words in the search bar to get results
 to search for repositories - `http://127.0.0.1:5000/repos`type key words in the search bar to get results
 
-
-See practical examples of how to use the GitHub Stats API in the [Examples of Use](#examples-of-use) section. These examples help you understand how to leverage the API's capabilities.
 
 ## Issues
 

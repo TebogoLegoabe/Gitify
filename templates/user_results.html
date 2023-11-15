@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container">
+  <!--
+    results of search by users
+  -->
   {% if results > 0 %}     
   <div class="stats">
     <span><b>{{ results }}</b> Users found</span>
   </div>
+    {# loops over all users and displays them #}
     {% for user in users %}
     <div class="user">
       <div class="user-info">
@@ -28,7 +32,11 @@
       </div>
     </div>
     {% endfor %}
+    <!--
+      pagination
+    -->
     <ul class="page_nav">
+      {# managing pagination #}
       {% if p.page != 1 %}
       <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=1)}}">first</a></li>
       <li><a href="{{ url_for('search_users', q=p.q, language=q.language, sort_by=p.sort_by, page=p.page-1)}}">prev</a></li>

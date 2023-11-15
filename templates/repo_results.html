@@ -1,10 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
+<!--
+  results of repositories search
+-->
 <div class="container">
   {% if results > 0 %}
     <div class="stats">
       <span><b>{{ results }}</b> Repositories found</span>
     </div>
+    {# loops over all repositories and displays them #}
     {% for repo in repos %}
       <div class="repo">
         <div class="repo-info">
@@ -22,7 +26,11 @@
         <div class="repo-others">Language: {{repo.language}} | Forks: {{ repo.forks }} | Stars: {{ repo.stars }}</div>
       </div>
     {% endfor %}
+    <!--
+      pagination
+    -->
     <ul class="page_nav">
+      {# managing pagination #}
       {% if p.page != 1 %}
       <li><a href="{{ url_for('search_repos', q=p.q, language=p.language, sort_by=p.sort_by, page=1)}}">first</a></li>
       <li><a href="{{ url_for('search_repos', q=p.q, language=p.language, sort_by=p.sort_by, page=p.page-1)}}">prev</a></li>

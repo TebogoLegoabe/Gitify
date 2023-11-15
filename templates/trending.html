@@ -9,22 +9,32 @@
     <link rel="stylesheet" type="text/css" href="../static/styles/user.css">
     <link rel="stylesheet" type="text/css" href="../static/styles/repo.css">
     <link rel="icon" href="../static/images/icon.png" />
-    <title>Gitify - 404 error page</title>
+    <title>Trending</title>
 
   </head>
   <body>
+    <!--
+      header
+    -->
     <header>
       <span class="logo"><img src="../static/images/gitify_logo_light.png" alt="gitify logo"></span>
     </div>
     <div>
         <h1>🔥 Trending Repositories 🔥</h1>
     </div>
+    <!--
+      navigations
+    -->
       <div class="nav">
         <a href="{{url_for('trending_repos')}}" class="first-nav">🔥 Trending</a>
         <a href="{{url_for('home')}}">🔎 Search</a>
       </div>
     </header>
+    <!--
+      list trending repositories
+    -->
         <div class="container">
+            {# display all repositories found #}
             {% for repo in repos %}
             <div class="repo">
               <div class="repo-info">
@@ -47,6 +57,9 @@
                 
         </div>
   </div>
+  <!--
+    footer
+  -->
     <footer>
         <p>© 2023 Gitify</p>
     </footer>
